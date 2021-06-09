@@ -1,0 +1,32 @@
+{
+  "msg": "请求成功",
+  "code": 0,
+  "data": {
+      "id": "11",
+      "currentGrade": 0,
+      "time": 8000,
+      "roundNum": 0,
+      "nextStage": "礼部尚书",
+      "roundProgress": 0,
+      "totalProgress": 10,
+      "physicalStrength": 4,
+      "numTimes": 5,
+      "address": "北京",
+      "overUsers": "40%",
+      "gameInfo": {
+          "idioms": [{
+              "id": 101,
+              "direction": 1,
+              "position": 0,
+              "word": ["", "水", "青", "山"]
+          }, {
+              "id": 2159,
+              "direction": 2,
+              "position": 0,
+              "word": ["", "肥", "红", "瘦"]
+          }],
+          "options": ["天", "流", "绿", "容", "从"],
+          "keyWord": "绿"
+      }
+  }
+}

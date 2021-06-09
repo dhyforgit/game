@@ -1,3 +1,4 @@
+let timer = null;
 export default {
   // 天 时 分 秒 格式化函数
   countDown(seconds) {
@@ -11,4 +12,16 @@ export default {
     s = s < 10 ? "0" + s : s;
     return h + ":" + m + ":" + s;
   },
+  //定时器没过1秒参数减1
+  Time(seconds) {
+    timer = setInterval(() => {
+      seconds -= 1;
+      if (seconds == 0) {
+        clearInterval(timer);
+      } else {
+        seconds = this.countDown(seconds)
+      }
+      return seconds;
+    }, 1000);
+  }
 };

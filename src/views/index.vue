@@ -1,23 +1,51 @@
 <template>
   <div class="game">
+    <div class="audio" @click="audioAutoPlay">
+      <img v-if="!isAudioPlay" src="../assets/img/soundsize.png" alt="" />
+      <img v-if="isAudioPlay" src="../assets/img/mute.png" alt="" />
+      <audio
+        id="audio"
+        loop
+        autoplay
+        ref="audio"
+        :src="require('../assets/audio/5d819f823d0ad30237.mp3')"
+      ></audio
+      ><audio
+        id="audioSuccess"
+        ref="audioSuccess"
+        :src="require('../assets/audio/challenge-success.mp3')"
+      ></audio
+      ><audio
+        id="audioError"
+        ref="audioError"
+        :src="require('../assets/audio/btn-audio.mp3')"
+      ></audio>
+      <audio
+        id="audioDialog"
+        ref="audioDialog"
+        :src="require('../assets/audio/bingo-audio.mp3')"
+      ></audio>
+    </div>
     <div class="banner-img">
       <img src="../assets/img/zi.png" alt="" />
       <div class="grade-box">
         <img src="../assets/img/user-1p.png" alt="" />
         <div class="grabe">
           <div class="user-grabe">
-            <i>当前官阶：一品</i><em @click="currentRankDialog = true"></em>
+            <i>当前官阶：一品</i><em @click="openDialog(0)"></em>
           </div>
           <div class="time">
-            <span><i>4</i></span>
+            <span
+              ><i>{{ physicalStrength }}</i></span
+            >
             <span>{{ count }}</span>
           </div>
         </div>
         <div class="grabe-btn">
-          <span class="btn-salary" @click="rewardBoxDialog = true">领俸禄</span>
-          <span class="btn-strength">
+          <span class="btn-salary" @click="openDialog(1)">领俸禄</span>
+          <span class="btn-strength" @click="onOpenMsg(0)">
             <i></i><i>领体力</i>
-            <em>剩余次数:5</em>
+            <em>剩余次数:{{ numTimes }}</em>
           </span>
         </div>
       </div>
@@ -30,18 +58,19 @@
           <span>本轮进度</span>
           <div class="bar">
             <div class="bar-bg"></div>
-            <div class="bar-speed"></div>
-            <i>1/10题</i>
-            <em></em>
+            <div class="bar-speed" :style="{ width: roundProgress * 10 + '%' }">
+              <i>{{ roundProgress }}/{{ totalProgress }}题</i>
+            </div>
+            <em @click="onOpenMsg(1)"></em>
           </div>
         </div>
       </div>
       <div class="game-slog">
-        <span>再挑战17轮可以升官：</span>
-        <span>礼部尚书</span>
+        <span>再挑战{{ roundNum }}轮可以升官：</span>
+        <span>{{ nextStage }}</span>
       </div>
       <div class="idioms">
-        <div class="point"></div>
+        <div class="point" @click="onPoint"></div>
         <div class="rows">
           <div
             class="item"
@@ -49,15 +78,15 @@
             :key="i"
             :style="{
               left: 14 * i + 'vw',
-              top: 14 * json.idioms[1].position + 'vw',
-              border: json.idioms[1].position == i ? '0' : '',
+              top: 14 * gameInfo.idioms[1].position + 'vw',
+              border: gameInfo.idioms[1].position == i ? '0' : '',
             }"
           >
             <span
               :class="
-                json.idioms[1].position != i && json.keyWord != onFirst
+                gameInfo.idioms[1].position != i && gameInfo.keyWord != onFirst
                   ? 'item-bg'
-                  : json.keyWord == onFirst
+                  : gameInfo.keyWord == onFirst && !isClikePoint
                   ? 'green'
                   : ''
               "
@@ -72,13 +101,15 @@
             :key="i"
             :style="{
               top: 14 * i + 'vw',
-              left: 14 * json.idioms[0].position + 'vw',
-              padding: json.idioms[0].position == i ? '2px' : '',
+              left: 14 * gameInfo.idioms[0].position + 'vw',
+              padding: gameInfo.idioms[0].position == i ? '2px' : '',
             }"
             :class="
-              json.idioms[1].position == i && json.keyWord != onFirst && v != ''
+              gameInfo.idioms[1].position == i &&
+              gameInfo.keyWord != onFirst &&
+              v != ''
                 ? 'active animated'
-                : json.idioms[1].position == i && v != ''
+                : gameInfo.idioms[1].position == i && v != ''
                 ? 'active'
                 : ''
             "
@@ -86,9 +117,9 @@
             <i></i><i></i><i></i><i></i>
             <span
               :class="
-                json.idioms[1].position == i && json.keyWord != onFirst
+                gameInfo.idioms[1].position == i && gameInfo.keyWord != onFirst
                   ? 'active item-bg'
-                  : json.keyWord == onFirst
+                  : gameInfo.keyWord == onFirst && !isClikePoint
                   ? 'active green'
                   : 'item-bg'
               "
@@ -99,24 +130,23 @@
       </div>
       <div class="selsct-item">
         <span
-          v-for="(item, index) in json.options"
+          v-for="(item, index) in gameInfo.options"
           :key="index"
           :class="
-            btnAtive == index && json.keyWord != onFirst
+            btnAtive == index && gameInfo.keyWord != onFirst
               ? 'active'
-              : json.keyWord == onFirst && btnAtive == index
+              : gameInfo.keyWord == onFirst && btnAtive == index
               ? 'on-true'
               : ''
           "
           @click="onSelect(item, index)"
         >
-          {{ item }} 
-        {{json.keyWord}} {{onFirst}}{{btnAtive}}{{index}}
+          {{ item }}
         </span>
       </div>
     </div>
     <!-- 位置 -->
-    <div class="game-exceed">已经超越北京52%的用户</div>
+    <div class="game-exceed">已经超越{{ address }}{{ overUsers }}的用户</div>
     <currentRank
       :currentRankDialog="currentRankDialog"
       @onCloseCurrentRank="onCloseCurrentRank"
@@ -133,6 +163,7 @@
       :commonBoxDialog="commonBoxDialog"
       @onClosecommon="onClosecommon"
     ></commonBox>
+    <div v-if="isOpenMsg" class="point-box">{{ errorMsg }}</div>
   </div>
 </template>
 
@@ -151,54 +182,133 @@ export default {
   },
   data() {
     return {
-      json: {
-        idioms: [
-          {
-            id: 101,
-            direction: 1,
-            position: 0,
-            word: ["", "水", "青", "山"],
-          },
-          {
-            id: 2159,
-            direction: 2,
-            position: 0,
-            word: ["", "肥", "红", "瘦"],
-          },
-        ],
-        options: ["天", "流", "绿", "容", "从"],
-        keyWord: "绿",
-      },
+      gameInfo: {},
       list: [],
       onFirst: "",
       btnAtive: null,
+      currentGrade: 0, //当前官阶
       currentRankDialog: false, // 考取功名弹框
       promotionDialog: false, //升官发财
       rewardBoxDialog: false, //朝廷俸禄
       commonBoxDialog: false, //通用
       count: 0, // 倒计时
       seconds: 864000, // 10天的秒数
-      timer: null,
+      timer: null, // 倒计时
+      isAudioPlay: true, //是否播放音乐
+      errorMsg: "", //弹框内容
+      isOpenMsg: false, //是否显示消息弹框
+      roundProgress: 10, //  本轮进度
+      totalProgress: 10, // 总进度
+      isClikePoint: false, // 是否点击提示
+      numTimes: 4, //剩余次数
+      physicalStrength: 4, // 体力
+      address: "北京", //当前地址
+      overUsers: "40%", // 超过多少用户
+      roundNum: 0, //再挑战几轮
+      nextStage: "", //下一官阶
+      jsonUrl: require(`../assets/json.json`),
     };
   },
   mounted() {
     this.getIdioms();
     this.Time();
+    this.audioAutoPlay();
   },
   methods: {
+    audioAutoPlay() {
+      this.$nextTick(() => {
+        if (this.isAudioPlay) {
+          this.$refs.audio.play();
+          this.$refs.audio.volume = "0.4";
+          this.isAudioPlay = false;
+        } else {
+          this.$refs.audio.pause();
+          this.isAudioPlay = true;
+        }
+      });
+    },
+    onPoint() {
+      //点击提示
+       
+      // this.onFirst = this.gameInfo.keyWord;
+      // for (var i in this.gameInfo.options) {
+      //   if (this.gameInfo.options[i] == this.onFirst) {
+      //     this.btnAtive = i;
+      //   }
+      // }
+      // this.isClikePoint = true;
+      // setTimeout(() => {
+      //   this.isClikePoint = false;
+      // }, 1000);
+      // console.log(this.onFirst, this.btnAtive);
+    },
+    onOpenMsg(v) {
+      if (!this.isOpenMsg) {
+        if (v == 0) {
+          //领体力
+          this.errorMsg = "当前体力已满";
+        } else if (v == 1) {
+          //点击宝箱
+          this.errorMsg = "再答对10道题可获得宝箱";
+        }
+        this.isOpenMsg = true;
+        setTimeout(() => {
+          this.isOpenMsg = false;
+          this.errorMsg = "";
+        }, 3000);
+      }
+    },
     getIdioms() {
       this.list = [];
-      for (let i = 0; i < this.json.idioms.length; i++) {
-        this.list.push(this.json.idioms[i].word);
+      let res = this.jsonUrl;
+      console.log(res);
+      if (res.code == 0) {
+        this.gameInfo = res.data.gameInfo;
+        this.numTimes = res.data.numTimes;
+        this.physicalStrength = res.data.physicalStrength;
+        this.address = res.data.address;
+        this.overUsers = res.data.overUsers;
+        this.roundProgress = res.data.roundProgress;
+        this.totalProgress = res.data.totalProgress;
+        this.currentGrade = res.data.currentGradel;
+        this.seconds = res.data.time;
+        this.roundNum = res.data.roundNum;
+        this.nextStage = res.data.nextStage;
+      }
+      // this.$request.get({
+      //   url: ``,
+      //   done: (res) => {
+      //     console.log(res)
+      //   },
+      // });
+      for (let i = 0; i < this.gameInfo.idioms.length; i++) {
+        this.list.push(this.gameInfo.idioms[i].word);
       }
       console.log(this.list);
     },
     onSelect(item, index) {
       this.onFirst = "";
-      this.json.idioms[0].word[this.json.idioms[0].position] = item;
+      this.gameInfo.idioms[0].word[this.gameInfo.idioms[0].position] = item;
       this.onFirst = item;
       this.btnAtive = index;
+      if (this.gameInfo.keyWord == item) {
+        this.$refs.audioSuccess.play();
+      } else {
+        this.$refs.audioError.play();
+      }
       this.getIdioms();
+    },
+    openDialog(v) {
+      this.$refs.audioDialog.play();
+      if (v == 0) {
+        this.currentRankDialog = true; // 考取功名弹框
+      } else if (v == 1) {
+        this.rewardBoxDialog = true; //朝廷俸禄
+      } else if (v == 2) {
+        this.promotionDialog = true; //升官发财
+      } else if (v == 3) {
+        this.commonBoxDialog = true; //通用
+      }
     },
     // 关闭弹框
     onCloseCurrentRank(v) {
@@ -206,6 +316,8 @@ export default {
     },
     onClosePromotionBox(v) {
       this.promotionDialog = v;
+      this.rewardBoxDialog = true; //朝廷俸禄
+      this.$refs.audioDialog.play();
     },
     onCloseRewardBox(v) {
       this.rewardBoxDialog = v;
@@ -235,6 +347,20 @@ export default {
   width: 100vw;
   background: url(../assets/img/bg.png) no-repeat;
   background-size: 100%;
+  .audio {
+    width: 60px;
+    height: 60px;
+    background: rgba(0, 0, 0, 32%);
+    border-radius: 50%;
+    padding: 10px;
+    position: fixed;
+    right: 20px;
+    top: 20px;
+    z-index: 99;
+    img {
+      width: 100%;
+    }
+  }
   // banenr
   .banner-img {
     width: 100vw;
@@ -408,13 +534,12 @@ export default {
           font-weight: bold;
           color: #b56023;
           line-height: 40px;
-          flex: 1;
+          width: 123px;
         }
         .bar {
-          width: 533px;
+          width: 470px;
           height: 40px;
           border-radius: 20px;
-          padding-right: 20px;
           position: relative;
           .bar-bg {
             background: url(../assets/img/jindu.png) no-repeat;
@@ -424,40 +549,46 @@ export default {
             position: absolute;
             left: 0;
             top: 0;
+            z-index: 99;
           }
           .bar-speed {
             background: #ffd400;
             border-radius: 20px 0px 0px 20px;
             width: calc(470px / 1);
             height: 40px;
-          }
-          i {
-            position: absolute;
-            top: -50px;
-            font-size: 26px;
-            font-weight: bold;
-            color: #b56023;
-            line-height: 38px;
-            font-style: inherit;
-            left: 0;
-            &::after {
-              content: "";
-              display: block;
-              width: 19px;
-              height: 10px;
-              background: url(../assets/img/icon_arrows_s.png) no-repeat;
-              background-size: auto 100%;
-              margin: 0 auto;
+            position: relative;
+            z-index: 9;
+            i {
+              position: absolute;
+              top: -50px;
+              font-size: 26px;
+              font-weight: bold;
+              color: #b56023;
+              line-height: 38px;
+              font-style: inherit;
+              right: -25px;
+              width: 100px;
+              &::after {
+                content: "";
+                display: block;
+                width: 19px;
+                height: 10px;
+                background: url(../assets/img/icon_arrows_s.png) no-repeat;
+                background-size: auto 100%;
+                margin: 0 auto;
+              }
             }
           }
+
           em {
             background: url(../assets/img/icon_box.png) no-repeat;
             background-size: auto 100%;
             width: 80px;
             height: 70px;
             position: absolute;
-            right: 0;
+            right: -20px;
             top: -20px;
+            z-index: 99;
           }
         }
       }
@@ -672,8 +803,26 @@ export default {
     line-height: 55px;
     padding: 39px 0 40px 0;
   }
+  .point-box {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    height: 50px;
+    background: rgba(0, 0, 0, 62%);
+    color: #ffffff;
+    font-size: 30px;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    padding: 0 40px;
+    border-radius: 25px;
+    transform: translate(-50%, -50%);
+    transition: all 2s;
+    white-space: nowrap;
+    line-height: 30px;
+  }
 }
-
 @keyframes upAnimation {
   0%,
   100% {

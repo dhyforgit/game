@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import App from './App.vue'
-
 // 基础配置
 import base from './utils/base'
 Vue.use(base)

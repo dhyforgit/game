@@ -1,14 +1,20 @@
 <template>
   <div class="dialog-box" v-if="rewardBoxDialog">
     <div class="dialog-bg" @click="close"></div>
-    <div class="dialog" :class="rewardBoxDialog ? 'anim':''">
+    <div class="dialog" :class="rewardBoxDialog ? 'anim' : ''">
       <div class="close" @click="close"></div>
       <div class="list">
         <div class="title">每天定时发放 记得回来领取</div>
         <div class="dialog-info">
-          <span>当前官阶：<i>榜眼</i></span>
-          <span>可领取俸禄数：<i>5</i></span>
-          <span>离升官状元还差：<i>23轮</i></span>
+          <span
+            >当前官阶：<i>{{ current }}</i></span
+          >
+          <span
+            >可领取俸禄数：<i>{{ available }}</i></span
+          >
+          <span
+            >离升官状元还差：<i>{{ rounds }}轮</i></span
+          >
         </div>
         <div
           class="item-box"
@@ -31,7 +37,7 @@
                   : 'upgrade'
               "
             >
-              {{ item.time }}
+              {{ countdown[index] }}
             </div>
           </div>
         </div>
@@ -50,54 +56,53 @@ export default {
   },
   data() {
     return {
-      list: [
-        {
-          name: "书生",
-          btnType: 1, // 1 倒计时 2 可领取 3 视频可领取 4升官可领
-          opacity: 1,
-          received: true,
-          time: "07:58:24",
-        },
-        {
-          name: "秀才",
-          btnType: 2, // 1 倒计时 2 可领取 3 视频可领取 4升官可领
-          opacity: 1,
-          received: false,
-          time: "",
-        },
-        {
-          name: "举人",
-          btnType: 3, // 1 倒计时 2 可领取 3 视频可领取 4升官可领
-          opacity: 1,
-          received: false,
-          time: "",
-        },
-        {
-          name: "探花",
-          btnType: 4, // 1 倒计时 2 可领取 3 视频可领取 4升官可领
-          opacity: 1,
-          received: false,
-          time: "",
-        },
-        {
-          name: "榜眼",
-          btnType: 4, // 1 倒计时 2 可领取 3 视频可领取 4升官可领
-          opacity: 1,
-          received: false,
-          time: "",
-        },
-        {
-          name: "状元",
-          btnType: 4, // 1 倒计时 2 可领取 3 视频可领取 4升官可领
-          opacity: 1,
-          received: false,
-          time: "",
-        },
-      ],
+      list: [],
+      countdown: [],
+      timer: null,
+      current: "榜眼",
+      available: 5,
+      rounds: 23,
+      jsonUrl: require(`../assets/json2.json`),
     };
   },
+  watch: {
+    rewardBoxDialog(v) {
+      if (v) {
+        this.getList();
+      }
+    },
+  },
+  created() {},
   methods: {
+    getList() {
+      this.list = [];
+      let res = this.jsonUrl;
+      console.log(res);
+      if (res.code == 0) {
+        this.list = res.data.list;
+        this.current = "榜眼";
+        this.available = 5;
+        this.rounds = 23;
+        this.list.forEach((item, index) => {
+          if (item.time != "") {
+            this.Time(item.time, index);
+          }
+        });
+      }
+    },
+    //定时器没过1秒参数减1
+    Time(seconds, index) {
+      this.timer = setInterval(() => {
+        seconds -= 1;
+        if (seconds == 0) {
+          clearInterval(this.timer);
+        } else {
+          this.$set(this.countdown, index, this.$tools.countDown(seconds));
+        }
+      }, 1000);
+    },
     close() {
+      clearInterval(this.timer);
       this.$emit("onCloseRewardBox", false);
     },
   },
@@ -111,6 +116,7 @@ export default {
   position: fixed;
   top: 0;
   left: 0;
+  z-index: 999;
   .dialog-bg {
     background: rgba(0, 0, 0, 44%);
     width: 100%;
@@ -253,7 +259,7 @@ export default {
   }
 }
 @keyframes openDialog {
-  0%{
+  0% {
     transform: translate(-50%, -50%) scale(0);
   }
   30%,

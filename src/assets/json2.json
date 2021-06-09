@@ -1,0 +1,59 @@
+{
+    "msg": "请求成功",
+    "code": 0,
+    "data": {
+        "list": [
+            {
+                "id": 1,
+                "name": "书生",
+                "btnType": 1,
+                "opacity": 1,
+                "received": false,
+                "time": "800"
+            },
+            {
+                "id": 1,
+                "name": "秀才",
+                "btnType": 2,
+                "opacity": 1,
+                "received": true,
+                "time": ""
+            },
+            {
+                "id": 1,
+                "name": "举人",
+                "btnType": 3,
+                "opacity": 1,
+                "received": true,
+                "time": ""
+            },
+            {
+                "id": 1,
+                "name": "探花",
+                "btnType": 4,
+                "opacity": 1,
+                "received": true,
+                "time": ""
+            },
+            {
+                "id": 1,
+                "name": "榜眼",
+                "btnType": 4,
+                "opacity": 1,
+                "received": true,
+                "time": ""
+            },
+            {
+                "id": 1,
+                "name": "状元",
+                "btnType": 4,
+                "opacity": 1,
+                "received": true,
+                "time": ""
+            }
+        ],
+        "current": "榜眼",
+        "available": 5,
+        "rounds": 23
+    }
+}

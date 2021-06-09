@@ -1,0 +1,96 @@
+{
+    "msg": "请求成功",
+    "code": 0,
+    "data": [
+        {
+            "name": "书生",
+            "carryNum": 0,
+            "isCarry": true,
+            "current": false
+        },
+        {
+            "name": "秀才",
+            "carryNum": 1,
+            "isCarry": false,
+            "current": true
+        },
+        {
+            "name": "举人",
+            "carryNum": 4,
+            "isCarry": false,
+            "current": false
+        },
+        {
+            "name": "探花",
+            "carryNum": 10,
+            "isCarry": false,
+            "current": false
+        },
+        {
+            "name": "榜眼",
+            "carryNum": 20,
+            "isCarry": false,
+            "current": false
+        },
+        {
+            "name": "状元",
+            "carryNum": 50,
+            "isCarry": false,
+            "current": false
+        },
+        {
+            "name": "九品芝麻官",
+            "carryNum": 100,
+            "isCarry": false,
+            "current": false
+        },
+        {
+            "name": "八品侍郎",
+            "carryNum": 200,
+            "isCarry": false,
+            "current": false
+        },
+        {
+            "name": "七品县令",
+            "carryNum": 300,
+            "isCarry": false,
+            "current": false
+        },
+        {
+            "name": "六品太学博士",
+            "carryNum": 400,
+            "isCarry": false,
+            "current": false
+        },
+        {
+            "name": "五品翰林学士",
+            "carryNum": 500,
+            "isCarry": false,
+            "current": false
+        },
+        {
+            "name": "四品知府",
+            "carryNum": 600,
+            "isCarry": false,
+            "current": false
+        },
+        {
+            "name": "三品礼部尚书",
+            "carryNum": 700,
+            "isCarry": false,
+            "current": false
+        },
+        {
+            "name": "二品内阁学士",
+            "carryNum": 800,
+            "isCarry": false,
+            "current": false
+        },
+        {
+            "name": "一品大丞相",
+            "carryNum": 1000,
+            "isCarry": false,
+            "current": false
+        }
+    ]
+}

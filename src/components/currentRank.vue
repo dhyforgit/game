@@ -28,71 +28,23 @@ export default {
   },
   data() {
     return {
-      list: [
-        {
-          name: "秀才",
-          carryNum: 100,
-          isCarry: true,
-          current: false,
-        },
-        {
-          name: "举人",
-          carryNum: 100,
-          isCarry: true,
-          current: false,
-        },
-        {
-          name: "探花",
-          carryNum: 20,
-          isCarry: true,
-          current: true,
-        },
-        {
-          name: "书生",
-          carryNum: 20,
-          isCarry: false,
-          current: false,
-        },
-        {
-          name: "探花",
-          carryNum: 20,
-          isCarry: false,
-          current: false,
-        },
-        {
-          name: "书生",
-          carryNum: 20,
-          isCarry: false,
-          current: false,
-        },
-        {
-          name: "探花",
-          carryNum: 20,
-          isCarry: false,
-          current: false,
-        },
-        {
-          name: "书生",
-          carryNum: 20,
-          isCarry: false,
-          current: false,
-        },
-        {
-          name: "探花",
-          carryNum: 20,
-          isCarry: false,
-          current: false,
-        },
-        {
-          name: "书生",
-          carryNum: 20,
-          isCarry: false,
-          current: false,
-        },
-      ],
+      list: [],
+      jsonUrl: require(`../assets/json1.json`),
     };
   },
+  mounted() {
+    this.getList();
+    
+  },
   methods: {
+    getList() {
+      this.list = [];
+      let res = this.jsonUrl;
+      console.log(res);
+      if (res.code == 0) {
+        this.list = res.data;
+      }
+    },
     close() {
       this.$emit("onCloseCurrentRank", false);
     },
@@ -107,6 +59,7 @@ export default {
   position: fixed;
   top: 0;
   left: 0;
+  z-index: 999;
   .dialog-bg {
     background: rgba(0, 0, 0, 44%);
     width: 100%;
@@ -181,7 +134,7 @@ export default {
 }
 
 @keyframes openDialog {
-  0%{
+  0% {
     transform: translate(-50%, -50%) scale(0);
   }
   30%,
